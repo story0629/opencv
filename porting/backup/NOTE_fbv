@@ -1,0 +1,119 @@
+Introduction
+
+	A graphic file viewer for the Linux framebuffer device 
+
+
+1. decompress "fbv-0.99.tar.gz"
+	tar xvf fbv-0.99.tar.gz
+
+
+2. ./configure -> make 
+	$ cd ~/fbv-0.99
+	$ make
+		might generate many warning/error messages	
+		=========================================================================================================
+		arm-linux-gcc -O2 -Wall    -c -o main.o main.c
+		arm-linux-gcc -O2 -Wall    -c -o jpeg.o jpeg.c
+		arm-linux-gcc -O2 -Wall    -c -o gif.o gif.c
+		gif.c:27:21: fatal error: gif_lib.h: No such file or directory
+		compilation terminated.
+		make: *** [gif.o] Error 1
+		=========================================================================================================
+		arm-linux-gcc -O2 -Wall    -c -o main.o main.c
+                arm-linux-gcc -O2 -Wall    -c -o jpeg.o jpeg.c
+                arm-linux-gcc -O2 -Wall    -c -o gif.o gif.c
+                arm-linux-gcc -O2 -Wall    -c -o png.o png.c
+                png.c: In function 'fh_png_load':
+                png.c:108: warning: pointer targets in assignment differ in signedness
+                png.c:114: warning: pointer targets in initialization differ in signedness
+                png.c:131: warning: pointer targets in assignment differ in signedness
+                arm-linux-gcc -O2 -Wall    -c -o bmp.o bmp.c
+                arm-linux-gcc -O2 -Wall    -c -o fb_display.o fb_display.c
+                arm-linux-gcc -O2 -Wall    -c -o resize.o resize.c
+                arm-linux-gcc -O2 -Wall  -o fbv main.o jpeg.o gif.o png.o bmp.o fb_display.o resize.o -ljpeg
+                gif.o: In function `fh_gif_getsize':
+                gif.c:(.text+0x74): undefined reference to `DGifOpenFileName'
+                gif.c:(.text+0x98): undefined reference to `DGifGetRecordType'
+                gif.c:(.text+0xc4): undefined reference to `DGifCloseFile'
+                gif.c:(.text+0xe0): undefined reference to `DGifGetExtension'
+                gif.c:(.text+0x100): undefined reference to `DGifGetExtensionNext'
+                gif.c:(.text+0x12c): undefined reference to `DGifGetImageDesc'
+                gif.c:(.text+0x13c): undefined reference to `DGifCloseFile'
+                gif.c:(.text+0x15c): undefined reference to `DGifCloseFile'
+                gif.o: In function `fh_gif_load':
+                gif.c:(.text+0x1b0): undefined reference to `DGifOpenFileName'
+                gif.c:(.text+0x1cc): undefined reference to `DGifGetRecordType'
+                gif.c:(.text+0x1f8): undefined reference to `DGifCloseFile'
+                gif.c:(.text+0x208): undefined reference to `DGifGetImageDesc'
+                gif.c:(.text+0x2a8): undefined reference to `DGifGetExtension'
+                gif.c:(.text+0x2d4): undefined reference to `DGifGetExtensionNext'
+                gif.c:(.text+0x2e4): undefined reference to `DGifCloseFile'
+                gif.c:(.text+0x354): undefined reference to `DGifGetLine'
+                gif.c:(.text+0x494): undefined reference to `DGifGetLine'
+                gif.c:(.text+0x568): undefined reference to `DGifGetLine'
+                gif.c:(.text+0x588): undefined reference to `DGifCloseFile'
+                gif.c:(.text+0x5f0): undefined reference to `DGifCloseFile'
+                png.o: In function `fh_png_getsize':
+                png.c:(.text+0x38): undefined reference to `png_create_read_struct'
+                png.c:(.text+0x4c): undefined reference to `png_create_info_struct'
+                png.c:(.text+0x80): undefined reference to `png_destroy_read_struct'
+                png.c:(.text+0xa0): undefined reference to `png_init_io'
+                png.c:(.text+0xac): undefined reference to `png_read_info'
+                png.c:(.text+0xdc): undefined reference to `png_get_IHDR'
+                png.c:(.text+0xec): undefined reference to `png_destroy_read_struct'
+                png.o: In function `fh_png_load':
+                png.c:(.text+0x158): undefined reference to `png_create_read_struct'
+                png.c:(.text+0x16c): undefined reference to `png_create_info_struct'
+                png.c:(.text+0x1a0): undefined reference to `png_destroy_read_struct'
+                png.c:(.text+0x1c0): undefined reference to `png_init_io'
+                png.c:(.text+0x1cc): undefined reference to `png_read_info'
+                png.c:(.text+0x1fc): undefined reference to `png_get_IHDR'
+                png.c:(.text+0x234): undefined reference to `png_get_valid'
+                png.c:(.text+0x254): undefined reference to `png_set_interlace_handling'
+                png.c:(.text+0x264): undefined reference to `png_read_update_info'
+                png.c:(.text+0x2c8): undefined reference to `png_read_rows'
+                png.c:(.text+0x304): undefined reference to `png_read_end'
+                png.c:(.text+0x314): undefined reference to `png_destroy_read_struct'
+                png.c:(.text+0x3ac): undefined reference to `png_read_rows'
+                png.c:(.text+0x43c): undefined reference to `png_set_tRNS_to_alpha'
+                png.c:(.text+0x44c): undefined reference to `png_set_gray_to_rgb'
+                png.c:(.text+0x458): undefined reference to `png_set_packing'
+                png.c:(.text+0x464): undefined reference to `png_set_expand'
+                png.c:(.text+0x470): undefined reference to `png_set_strip_16'
+                collect 2: ld returned 1 exit status
+                make: *** [fbv] Error 1
+		=========================================================================================================
+
+			download/compile/make libpng-1.4.1.tar.bz2/libungif-4.1.4.tar.gz
+
+				$ tar xvf libpng-1.4.1.tar.bz2
+				$ cd ~/libpng-1.4.1
+				$ ./configure --host=arm-linux CC=arm-linux-gcc --prefix=/usr/local/arm/4.5.1/arm-none-linux-gnueabi/
+				$ make -j4
+				$ make install	
+
+				$ tar xvf libungif-4.1.4.tar.gz
+                                $ cd ~/libungif-4.1.4
+                                $ ./configure --host=arm-linux CC=arm-linux-gcc --prefix=/usr/local/arm/4.5.1/arm-none-linux-gnueabi/
+                                $ make -j4
+                                $ make install
+                            
+			Include png/gif library by modifying this in fbv Makefile
+	                        LIBS    =  -ljpeg -lpng -lungif
+
+	$ cd ~/fbv-0.99
+        $ make
+		then "fbv" is generated in current directory and copy it/JPEG picture to ~/root_mkfs          
+
+3. run ./fbv demo.jpg on Tiny4412
+	#./fbv demo1.jpg
+		==================================================
+		./fbv: error while loading shared libraries: libpng14.so.14: cannot open shared object file: No such file or directory
+		===================================================
+		
+		copy related png/gif/... libraries to Tiny4412
+			cp -rf /usr/local/arm/4.5.1/arm-none-linux-gnueabi/lib/*png*  ~/root_mkfs/lib
+			cp -rf /usr/local/arm/4.5.1/arm-none-linux-gnueabi/lib/*gif*  ~/root_mkfs/lib
+			cp -rf /usr/local/arm/4.5.1/arm-none-linux-gnueabi/sys-root/usr/lib/*jpeg* ~/root_mkfs/lib			
+
+4. repeat step3 again

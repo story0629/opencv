@@ -1,0 +1,103 @@
+https://www.cnblogs.com/pengdonglin137/p/6604471.html
+https://blog.csdn.net/shuxiao9058/article/details/7026205
+https://vectorf.github.io/2018/01/31/20180131-%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85-OpenCV/
+
+http://www.alvaroferran.com/blog/cross-compiling-opencv-for-embedded-linux
+https://archlinuxarm.org/packages/arm/opencv
+https://forums.resin.io/t/precompiled-python-wheels-for-arm/591
+----------------------------------------------------------------------------------------------------------------------------------------
+
+sudo apt-get install openssl
+sudo apt-get install libssl-dev
+sudo apt-get intsll zlib*
+sudo apt-get install python-numpy python-scipy python-matplotlib python-pandas python-sympy python-nose
+
+Python:
+	./configure --with-ssl
+	make -j8
+	sudo make install
+
+	sudo pip3.5 install numpy
+
+	----------------------------------------------------------------------
+	openssl-build:
+		./config no-asm shared
+		vi Makefile
+
+		remove -m64
+
+		INSTALLTOP=/usr/local/arm/4.5.1/arm-none-linux-gnueabi/
+		OPENSSLDIR=/usr/local/arm/4.5.1/arm-none-linux-gnueabi/ssl
+		LIBDIR=lib
+		ENGINESDIR=/usr/local/arm/4.5.1/arm-none-linux-gnueabi/lib/engines-1.1
+
+		CROSS_COMPILE=arm-linux-
+
+	-----------------------------------------------------------------------
+	
+	mkdir ~/build_python
+
+	./configure --host=arm-none-linux-gnueabi --build=armv7 prefix=/home/cadtc/build_python --disable-ipv6 ac_cv_file__dev_ptmx="no" ac_cv_file__dev_ptc="no" LDFLAGS="-L/usr/local/arm/4.5.1/arm-none-linux-gnueabi/sys-root/usr/lib/" 
+
+	vi Modules/Setup
+        zlib
+        selects
+        ssl
+
+	make -j8
+	----------------------------------------------------------------------
+	Syntax error: word unexpected (expecting ")")
+
+	add #include <stdio.h> to file header
+	----------------------------------------------------------------------
+
+	sudo -s
+	make install
+
+	cd ~/build_python
+	cp * ~/root_mkfs/
+
+	export PYTHONHOME=/
+	export PYTHONPATH=/
+
+	----------------------------------------------------------------------
+	python install modules:
+	
+		python3 setup.py install
+
+		python3 setup.py install --no-cython-compile
+
+		python3 setup.py build_py
+
+--------------------------------------------------------------------------
+
+set bootargs root=/dev/mmcblk0p3 rootfstype=ext3 init=linuxrc console=ttySAC0 mem=1024M lcd=s70
+
+route add default gw 192.168.1.1
+
+vi /etc/resolv.conf
+nameserver 8.8.8.8  
+nameserver 8.8.4.4
+
+--------------------------------------------------------------
+
+mkdir ~/build_opencv
+cmake-gui
+whereis the source code:/home/cadtc/openCV
+where to build teh binaryes:/home/cadtc/build_opencv
+
+/usr/local/bin/python3 (ver 3.6.5)
+/usr/local/lib/libpython3.6m.a (ver 3.6.5)
+/usr/local/lib/python3.6/site-packages/numpy/core/include (ver 1.14.3)
+lib/python3.6/site-packages
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE   \
+    -D CMAKE_INSTALL_PREFIX=/home/cadtc/build_opencv \
+    -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib-3.1.0/modules   \
+    -D PYTHON3_INCLUDE_PATH=/home/cadtc/build_python/include/python3.5m \
+    -D PYTHON3_INCLUDE_DIR=/home/cadtc/build_python/include/python3.5m    \
+    -D CMAKE_CXX_COMPILER=arm-linux-g++ \
+    -D CMAKE_C_COMPILER=arm-linux-gcc \
+    -D PYTHON3_LIBRARY=/home/cadtc/build_python/lib/libpython3.5m.so \
+    -D PYTHON3_NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include \
+    -D BUILD_OPENCV_PYTHON3=ON .
